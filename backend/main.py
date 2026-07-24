@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from dotenv import load_dotenv
 from pydantic import BaseModel
 from openai import OpenAI
-from backend.tts.vega_tts import speak
+from tts.vega_tts import speak
 import os
 import json
 
