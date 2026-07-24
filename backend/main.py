@@ -2,7 +2,8 @@ from fastapi import FastAPI
 from dotenv import load_dotenv
 from pydantic import BaseModel
 from openai import OpenAI
-from tts.vega_tts import speak
+def speak(text):
+    return "no-audio"
 import os
 import json
 
