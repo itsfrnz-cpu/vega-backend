@@ -6,6 +6,11 @@ def speak(text):
     return "no-audio"
 import os
 import json
+from backend.memory import (
+    load_memory,
+    load_profile,
+    remember_if_needed,
+)
 
 load_dotenv("backend/.env")
 
@@ -69,8 +74,6 @@ Vega: من وگا هستم ⭐ یک ستاره دیجیتال کوچیک که ب
 """
 print("CHECK VEGA:", "VEGA_STYLE_RULES" in globals())
 
-from backend.memory import load_memory, add_memory
-
 
 @app.get("/")
 def root():
@@ -86,13 +89,8 @@ class ChatRequest(BaseModel):
 @app.post("/chat")
 def chat(request: ChatRequest):
     try:
-        user_text = request.message.lower()
 
-        if "دوست دارم" in user_text:
-            add_memory(
-                "likes",
-                request.message
-            )
+        remember_if_needed(request.message)
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
@@ -102,10 +100,17 @@ def chat(request: ChatRequest):
                         VEGA_SYSTEM_PROMPT
                         + VEGA_STYLE_RULES
                         + EXAMPLES
-                        + "\nUser memory:\n"
+                        + "\n\nPROFILE:\n"
+                        + json.dumps(
+                            load_profile(),
+                            ensure_ascii=False,
+                            indent=2
+                        )
+                        + "\n\nMEMORY:\n"
                         + json.dumps(
                             load_memory(),
-                            ensure_ascii=False
+                            ensure_ascii=False,
+                            indent=2
                         )
                     )
                 },
