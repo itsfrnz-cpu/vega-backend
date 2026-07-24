@@ -3,8 +3,8 @@ import 'package:http/http.dart' as http;
 
 class VegaService {
   static const String _apiUrl =
-    'http://192.168.1.103:41400/chat';
-
+    'https://vega-backend-iogk.onrender.com/chat';
+    
   Future<String> sendMessage(String message) async {
     try {
       final response = await http.post(

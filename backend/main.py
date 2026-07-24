@@ -69,15 +69,8 @@ Vega: من وگا هستم ⭐ یک ستاره دیجیتال کوچیک که ب
 """
 print("CHECK VEGA:", "VEGA_STYLE_RULES" in globals())
 
-def load_memory():
-    try:
-        with open("memory.json", "r", encoding="utf-8") as f:
-            return json.load(f)
-    except:
-        return {}
+from backend.memory import load_memory, add_memory
 
-
-VEGA_MEMORY = load_memory()
 
 @app.get("/")
 def root():
@@ -93,6 +86,13 @@ class ChatRequest(BaseModel):
 @app.post("/chat")
 def chat(request: ChatRequest):
     try:
+        user_text = request.message.lower()
+
+        if "دوست دارم" in user_text:
+            add_memory(
+                "likes",
+                request.message
+            )
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
@@ -103,7 +103,10 @@ def chat(request: ChatRequest):
                         + VEGA_STYLE_RULES
                         + EXAMPLES
                         + "\nUser memory:\n"
-                        + json.dumps(VEGA_MEMORY, ensure_ascii=False)
+                        + json.dumps(
+                            load_memory(),
+                            ensure_ascii=False
+                        )
                     )
                 },
                 {
