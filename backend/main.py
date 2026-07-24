@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from dotenv import load_dotenv
 from pydantic import BaseModel
+from backend.memory_ai import should_remember
 from openai import OpenAI
 def speak(text):
     return "no-audio"
@@ -9,7 +10,6 @@ import json
 from backend.memory import (
     load_memory,
     load_profile,
-    remember_if_needed,
 )
 
 load_dotenv("backend/.env")
@@ -90,7 +90,35 @@ class ChatRequest(BaseModel):
 def chat(request: ChatRequest):
     try:
 
-        remember_if_needed(request.message)
+        memory_result = should_remember(
+            client,
+            request.message
+        )
+
+        if memory_result.get("remember"):
+
+            memory = load_memory()
+
+            category = memory_result["category"]
+            value = memory_result["value"]
+
+            memory.setdefault(category, [])
+
+            if value not in memory[category]:
+                memory[category].append(value)
+
+                with open(
+                    "memory.json",
+                    "w",
+                    encoding="utf-8"
+                ) as f:
+                    json.dump(
+                        memory,
+                        f,
+                        ensure_ascii=False,
+                        indent=2
+                    )
+
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
