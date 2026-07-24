@@ -90,12 +90,18 @@ class ChatRequest(BaseModel):
 def chat(request: ChatRequest):
     try:
 
+        print("MESSAGE:", request.message)
+
         memory_result = should_remember(
             client,
             request.message
         )
 
+        print("MEMORY RESULT:", memory_result)
+
         if memory_result.get("remember"):
+
+            print("SAVING MEMORY...")
 
             memory = load_memory()
 

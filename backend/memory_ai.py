@@ -54,7 +54,7 @@ If nothing is worth remembering:
             }
         ]
     )
-
+    print(response.choices[0].message.content) 
     return parse_memory(
         response.choices[0].message.content
     )
