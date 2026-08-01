@@ -89,9 +89,38 @@ class ChatRequest(BaseModel):
 
 @app.post("/chat")
 def chat(request: ChatRequest):
-    print("CHAT ENDPOINT HIT")
-    print("MESSAGE:", request.message)
+    try:
+        print("CHAT ENDPOINT HIT")
+        print("MESSAGE:", request.message)
 
-    return {
-        "response": "TEST OK"
-    }
+        # فعلاً خاموش
+        # memory_result = should_remember(
+        #     client,
+        #     request.message
+        # )
+
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": VEGA_SYSTEM_PROMPT
+                },
+                {
+                    "role": "user",
+                    "content": request.message
+                }
+            ],
+            temperature=0.7,
+            max_tokens=300,
+        )
+
+        return {
+            "response": response.choices[0].message.content
+        }
+
+    except Exception as e:
+        print("ERROR:", repr(e))
+        return {
+            "response": f"خطا از Vega: {str(e)}"
+        }
