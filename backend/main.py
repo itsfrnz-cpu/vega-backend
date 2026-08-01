@@ -90,7 +90,7 @@ class ChatRequest(BaseModel):
 @app.post("/chat")
 def chat(request: ChatRequest):
     try:
-
+        print("CHAT ENDPOINT HIT")
         print("MESSAGE:", request.message)
 
         memory_result = should_remember(
