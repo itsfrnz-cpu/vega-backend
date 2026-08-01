@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class VegaApi {
-  static const String baseUrl = "http://10.0.2.2:8000";
+  static const String baseUrl =
+      "https://vega-backend-iogk.onrender.com";
 
   static Future<String> sendMessage(String message) async {
     final response = await http.post(
@@ -19,7 +20,8 @@ class VegaApi {
       final data = jsonDecode(response.body);
       return data["reply"];
     } else {
-      throw Exception("Vega server error");
+      throw Exception(
+          "Vega server error: ${response.statusCode}\n${response.body}");
     }
   }
 }

@@ -18,11 +18,11 @@ class VegaService {
       );
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return data['response'] ?? 'جوابی دریافت نشد';
-      } else {
-        return 'خطا از سرور Vega: ${response.statusCode}';
-      }
+  final data = jsonDecode(response.body);
+  return data['response'] ?? data['reply'] ?? 'جوابی دریافت نشد';
+} else {
+  return 'خطا ${response.statusCode}\n${response.body}';
+}
     } catch (e) {
       return 'خطا در ارتباط با Vega: $e';
     }

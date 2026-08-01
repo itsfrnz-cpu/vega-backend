@@ -89,87 +89,9 @@ class ChatRequest(BaseModel):
 
 @app.post("/chat")
 def chat(request: ChatRequest):
-    try:
-        print("CHAT ENDPOINT HIT")
-        print("MESSAGE:", request.message)
+    print("CHAT ENDPOINT HIT")
+    print("MESSAGE:", request.message)
 
-        memory_result = should_remember(
-            client,
-            request.message
-        )
-
-        print("MEMORY RESULT:", memory_result)
-
-        if memory_result.get("remember"):
-
-            print("SAVING MEMORY...")
-
-            memory = load_memory()
-
-            category = memory_result["category"]
-            value = memory_result["value"]
-
-            memory.setdefault(category, [])
-
-            if value not in memory[category]:
-                memory[category].append(value)
-
-                with open(
-                    "memory.json",
-                    "w",
-                    encoding="utf-8"
-                ) as f:
-                    json.dump(
-                        memory,
-                        f,
-                        ensure_ascii=False,
-                        indent=2
-                    )
-
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        VEGA_SYSTEM_PROMPT
-                        + VEGA_STYLE_RULES
-                        + EXAMPLES
-                        + "\n\nPROFILE:\n"
-                        + json.dumps(
-                            load_profile(),
-                            ensure_ascii=False,
-                            indent=2
-                        )
-                        + "\n\nMEMORY:\n"
-                        + json.dumps(
-                            get_relevant_memory(request.message),
-                            ensure_ascii=False,
-                            indent=2
-                        )
-                    )
-                },
-                {
-                    "role": "user",
-                    "content": request.message
-                }
-            ],
-            temperature=0.7,
-            max_tokens=300,
-        )
-
-        # متن پاسخ Vega
-        response_text = response.choices[0].message.content
-
-        # تولید صدای Vega
-        audio_path = speak(response_text)
-
-        return {
-            "response": response_text,
-            "audio": str(audio_path)
-        }
-
-    except Exception as e:
-        return {
-            "response": f"خطا از Vega: {str(e)}"
-        }
+    return {
+        "response": "TEST OK"
+    }
