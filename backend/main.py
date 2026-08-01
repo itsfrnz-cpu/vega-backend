@@ -17,6 +17,7 @@ load_dotenv("backend/.env")
 app = FastAPI()
 
 github_token = os.getenv("GITHUB_TOKEN")
+print("TOKEN EXISTS:", bool(github_token))
 
 client = OpenAI(
     api_key=github_token,
