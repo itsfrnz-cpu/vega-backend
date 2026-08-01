@@ -9,7 +9,12 @@ import os
 import json
 from backend.memory_search import get_relevant_memory
 from backend.memory import (
-    get_relevant_memory(request.message)
+   + "\n\nMEMORY:\n"
++ json.dumps(
+    load_memory(),
+    ensure_ascii=False,
+    indent=2
+)
     load_profile,
 )
 
