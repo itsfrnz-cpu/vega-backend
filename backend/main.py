@@ -7,8 +7,9 @@ def speak(text):
     return "no-audio"
 import os
 import json
+from backend.memory_search import get_relevant_memory
 from backend.memory import (
-    load_memory,
+    get_relevant_memory(request.message)
     load_profile,
 )
 
@@ -142,7 +143,7 @@ def chat(request: ChatRequest):
                         )
                         + "\n\nMEMORY:\n"
                         + json.dumps(
-                            load_memory(),
+                            get_relevant_memory(request.message),
                             ensure_ascii=False,
                             indent=2
                         )
