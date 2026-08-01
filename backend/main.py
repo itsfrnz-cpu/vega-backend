@@ -90,6 +90,7 @@ class ChatRequest(BaseModel):
 @app.post("/chat")
 def chat(request: ChatRequest):
     try:
+        print("🔥 NEW CHAT VERSION")
         print("CHAT ENDPOINT HIT")
         print("MESSAGE:", request.message)
 
