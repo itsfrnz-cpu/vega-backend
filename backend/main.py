@@ -119,8 +119,10 @@ def chat(request: ChatRequest):
             "response": response.choices[0].message.content
         }
 
-    except Exception as e:
-        print("ERROR:", repr(e))
-        return {
-            "response": f"خطا از Vega: {str(e)}"
-        }
+   except Exception as e:
+    print("ERROR TYPE:", type(e))
+    print("ERROR DETAIL:", str(e))
+
+    return {
+        "response": f"{type(e).__name__}: {str(e)}"
+    }
