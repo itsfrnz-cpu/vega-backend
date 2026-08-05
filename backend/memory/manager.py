@@ -2,7 +2,7 @@ import json
 import os
 from pathlib import Path
 
-MEMORY_FILE = Path(__file__).parent / "memory.json"
+MEMORY_FILE = Path(__file__).parent / "data" / "memory.json"
 
 
 def load_memory():
@@ -33,11 +33,30 @@ def save_memory(memory):
 def add_memory(category, value):
     memory = load_memory()
 
-    if category not in memory:
-        memory[category] = []
+    if category == "likes":
+        target = memory["preferences"]["likes"]
 
-    if value not in memory[category]:
-        memory[category].append(value)
+    elif category in memory["preferences"]:
+        target = memory["preferences"][category]
+
+    elif category == "dislikes":
+        target = memory["preferences"]["dislikes"]
+
+    elif category == "projects":
+        target = memory["projects"]
+
+    elif category == "facts":
+        target = memory["facts"]
+
+    elif category == "goals":
+        target = memory["goals"]
+
+    else:
+        memory.setdefault(category, [])
+        target = memory[category]
+
+    if value not in target:
+        target.append(value)
 
     save_memory(memory)
 

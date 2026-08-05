@@ -5,6 +5,18 @@ class TimelineService {
 "first_chat";
   static const String lastChatKey = 
 "last_chat";
+  static const String chatCountKey = "chat_count";
+
+  Future<void> saveChatCount(int count) async {
+    final prefs = await SharedPreferences.getInstance();
+await prefs.setInt(chatCountKey, count);
+}
+
+
+  Future<int> getChatCount() async {
+    final prefs = await SharedPreferences.getInstance();
+return prefs.getInt(chatCountKey) ?? 0;
+}
 
   Future<void> saveFirstChat(String date) async {
     final prefs = await SharedPreferences.getInstance();

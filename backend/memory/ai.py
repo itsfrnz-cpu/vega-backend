@@ -3,7 +3,16 @@ import json
 
 def parse_memory(response):
     try:
-        return json.loads(response)
+        data = json.loads(response)
+
+        if data.get("remember"):
+            if "category" not in data or "value" not in data:
+                return {
+                    "remember": False
+                }
+
+        return data
+
     except:
         return {
             "remember": False

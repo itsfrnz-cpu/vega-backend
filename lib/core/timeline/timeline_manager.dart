@@ -19,6 +19,15 @@ Future<void> loadTimeline() async {
   );
 }
 
+Future<void> increaseChatCount() async {
+  final currentCount = await _service.getChatCount();
+
+  final newCount = currentCount + 1;
+
+  await _service.saveChatCount(newCount);
+
+  print("CHAT COUNT: $newCount");
+}
 Future<void> saveTimeline() async {
   if (timeline.firstChat != null) {
     await _service.saveFirstChat(
@@ -50,6 +59,7 @@ Future<void> updateLastChat() async {
   );
 
   await saveTimeline();
+  await increaseChatCount();
 }
   Duration? timeSinceLastChat() {
     if (timeline.lastChat == null) {
@@ -60,4 +70,21 @@ Future<void> updateLastChat() async {
       timeline.lastChat!,
     );
   }
+  String? getTimeSinceLastChatText() {
+  final duration = timeSinceLastChat();
+
+  if (duration == null) {
+    return null;
+  }
+
+  if (duration.inMinutes < 60) {
+    return "${duration.inMinutes} دقیقه پیش";
+  }
+
+  if (duration.inHours < 24) {
+    return "${duration.inHours} ساعت پیش";
+  }
+
+  return "${duration.inDays} روز پیش";
+}
 }

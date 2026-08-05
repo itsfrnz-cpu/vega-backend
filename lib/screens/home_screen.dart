@@ -177,7 +177,7 @@ Future<void> _startListening() async {
 }
 
 Future<void> _sendMessage() async {
-  print('SEND MESSAGE CALLED');
+  print('SEND MESSAGE CALLED - NEW VERSION 123');
   final text = messageController.text.trim();
 
   if (text.isEmpty) return;
@@ -195,7 +195,8 @@ Future<void> _sendMessage() async {
   updateVegaMood(text, VegaState.thinking);
 
   final reply = await _vegaService.sendMessage(text);
-
+    print("VEGA REPLY:");
+    print(reply);
   setState(() {
     messages.add({
       'role': 'vega',

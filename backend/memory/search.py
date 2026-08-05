@@ -1,4 +1,4 @@
-from memory import load_memory
+from memory.manager import load_memory
 
 
 def get_relevant_memory(message: str):

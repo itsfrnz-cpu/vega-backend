@@ -3,28 +3,31 @@ import 'package:http/http.dart' as http;
 
 class VegaService {
   static const String _apiUrl =
-    'https://vega-backend-iogk.onrender.com/chat';
+    'http://192.168.1.103:8000/chat';
     
-  Future<String> sendMessage(String message) async {
-    try {
-      final response = await http.post(
-        Uri.parse(_apiUrl),
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode({
-          'message': message,
-        }),
-      );
+ Future<String> sendMessage(String message) async {
+  print("===== SEND START =====");
+  print("MESSAGE: $message");
 
-      if (response.statusCode == 200) {
-  final data = jsonDecode(response.body);
-  return data['response'] ?? data['reply'] ?? 'جوابی دریافت نشد';
-} else {
-  return 'خطا ${response.statusCode}\n${response.body}';
+  print("SENDING TO:");
+  print(_apiUrl);
+
+  final response = await http.post(
+    Uri.parse(_apiUrl),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: jsonEncode({
+      'message': message,
+    }),
+  );
+
+  print("STATUS:");
+  print(response.statusCode);
+
+  print("BODY:");
+  print(response.body);
+
+  return response.body;
 }
-    } catch (e) {
-      return 'خطا در ارتباط با Vega: $e';
-    }
-  }
 }
