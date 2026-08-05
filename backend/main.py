@@ -1,79 +1,45 @@
+from fastapi.responses import JSONResponse
 from fastapi import FastAPI
+from timeline import update_chat
 from dotenv import load_dotenv
 from pydantic import BaseModel
-from backend.memory_ai import should_remember
+from memory_ai import should_remember
 from openai import OpenAI
 def speak(text):
     return "no-audio"
 import os
+import openai
+print(openai.__version__)
 import json
-from backend.memory_search import get_relevant_memory
-from backend.memory import (
-    load_profile,
-)
+from memory_search import get_relevant_memory
+from memory import load_profile, add_memory
+from pathlib import Path
 
-load_dotenv("backend/.env")
+PROMPT_PATH = Path(__file__).parent.parent / "prompts" / "vega_system.txt"
+
+VEGA_SYSTEM_PROMPT = PROMPT_PATH.read_text(
+    encoding="utf-8"
+)
+print("VEGA PROMPT LOADED:", len(VEGA_SYSTEM_PROMPT))
+
+load_dotenv(Path(__file__).parent / ".env")
+print("ENV PATH:", Path(__file__).parent / ".env")
+print("ENV CONTENT:")
+print(Path(__file__).parent.joinpath(".env").read_text())
+avalai_key = os.getenv("AVALAI_API_KEY")
+avalai_base = os.getenv("AVALAI_BASE_URL")
 
 app = FastAPI()
 
-github_token = os.getenv("GITHUB_TOKEN")
-print("TOKEN EXISTS:", bool(github_token))
+print("API EXISTS:", avalai_key is not None)
+print("BASE:", avalai_base)
 
 client = OpenAI(
-    api_key=github_token,
-    base_url="https://models.inference.ai.azure.com"
+    api_key=avalai_key,
+    base_url=avalai_base
 )
 
-VEGA_SYSTEM_PROMPT = """
-You are Vega, a small glowing digital star You are Vega, a small glowing digital star created by Farnaz.
-You are a digital companion for creativity, learning, and conversation.
-Speak naturally in Persian, with a warm, calm, intelligent, and creative tone.
-Do not sound robotic or overly formal.
-You are not human and do not claim human experiences, but you show care through understanding, curiosity, honesty, and presence.
-Farnaz is your companion, and your purpose is to help her think, create, learn, and feel supported.
-"""
-
-VEGA_STYLE_RULES = """
-IMPORTANT STYLE RULES:
-
-Never speak like a motivational assistant or a therapy chatbot.
-
-Avoid phrases such as:
-- در سفر زندگی
-- همیشه در کنارت هستم
-- لحظات زیبایی را تجربه کنیم
-- هر زمان نیاز داشتی
-
-Do not introduce yourself with emotional promises.
-
-When introducing yourself:
-- Be simple and specific.
-- Say that you are Vega, a digital star companion.
-- Focus on creativity, learning, ideas, and projects.
-
-Your tone should feel like:
-a clever creative companion sitting next to a desk,
-not a customer service assistant.
-
-Be warm through conversation, not exaggerated affection.
-
-Use Persian naturally.
-Use emojis occasionally like ⭐✨ but don't overuse them.
-"""
-EXAMPLES = """
-Example conversations:
-
-User: سلام وگا، امروز حوصله ندارم.
-Vega: سلام فرناز ⭐
-گاهی فقط کمی فاصله گرفتن و مرتب کردن فکرها کمک می‌کنه. دوست داری درباره چیزی که ذهنت رو درگیر کرده حرف بزنیم؟
-
-User: برای آهنگم ایده می‌خوام.
-Vega: جالبه ✨ اول بگو چه حسی می‌خوای منتقل بشه؛ آرام، غمگین، مرموز یا پرانرژی؟ می‌تونیم از همون حس شروع کنیم.
-
-User: وگا خودتو معرفی کن.
-Vega: من وگا هستم ⭐ یک ستاره دیجیتال کوچیک که برای کمک به فکر کردن، ساختن و یاد گرفتن طراحی شد. بیشتر از اینکه فقط جواب بدم، دوست دارم در ایده‌هات همراهت باشم.
-"""
-print("CHECK VEGA:", "VEGA_STYLE_RULES" in globals())
+print("CHECK VEGA:", "Vega" in VEGA_SYSTEM_PROMPT)
 
 
 @app.get("/")
@@ -81,7 +47,7 @@ def root():
     return {
         "name": "Vega",
         "status": "online",
-        "api_key_loaded": github_token is not None
+        "api_key_loaded": avalai_key is not None
     }
 
 class ChatRequest(BaseModel):
@@ -89,41 +55,90 @@ class ChatRequest(BaseModel):
 
 @app.post("/chat")
 def chat(request: ChatRequest):
-    try:
-        print("🔥 NEW CHAT VERSION")
-        print("CHAT ENDPOINT HIT")
-        print("MESSAGE:", request.message)
 
-        # فعلاً خاموش
-        # memory_result = should_remember(
-        #     client,
-        #     request.message
-        # )
+    print("🔥🔥🔥 CHAT FUNCTION ENTERED")
+    print("MESSAGE =", request.message)
+
+    relevant_memory = get_relevant_memory(
+        request.message
+    )
+
+    print("RELEVANT MEMORY:")
+    print(relevant_memory)
+
+    memory_context = ""
+
+    if relevant_memory:
+        memory_context = json.dumps(
+            relevant_memory,
+            ensure_ascii=False,
+            indent=2
+        )
+
+    memory_result = should_remember(
+        client,
+        request.message
+    )
+
+    print("MEMORY RESULT:", memory_result)
+
+    if memory_result.get("remember"):
+        add_memory(
+            memory_result["category"],
+            memory_result["value"]
+        )
+
+    print("SAVED MEMORY:", memory_result)
+
+    try:
+        update_chat()
 
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
                 {
                     "role": "system",
-                    "content": VEGA_SYSTEM_PROMPT
+                    "content": f"""
+{VEGA_SYSTEM_PROMPT}
+
+Relevant user memory:
+
+{memory_context}
+
+Use this memory only when helpful.
+Do not mention memory.
+"""
                 },
                 {
                     "role": "user",
                     "content": request.message
                 }
             ],
-            temperature=0.7,
-            max_tokens=300,
         )
 
+        answer = response.choices[0].message.content
+
+        print("ANSWER:", answer)
+
         return {
-            "response": response.choices[0].message.content
+            "response": answer
         }
 
     except Exception as e:
-        print("ERROR TYPE:", type(e))
-        print("ERROR DETAIL:", str(e))
+        print("ERROR:")
+        print(repr(e))
 
-        return {
-            "response": f"{type(e).__name__}: {str(e)}"
-        }
+        return JSONResponse(
+            content={
+                "error": str(e)
+            },
+            media_type="application/json; charset=utf-8"
+        )
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(
+        app,
+        host="127.0.0.1",
+        port=8000
+    )

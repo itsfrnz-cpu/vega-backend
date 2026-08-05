@@ -1,7 +1,8 @@
-from backend.memory import load_memory
+from memory import load_memory
 
 
 def get_relevant_memory(message: str):
+
     memory = load_memory()
     message = message.lower()
 
@@ -12,25 +13,33 @@ def get_relevant_memory(message: str):
             "پروژه",
             "بازی",
             "اپ",
-            "برنامه"
+            "برنامه",
+            "می‌سازم"
         ],
+
         "likes": [
             "دوست دارم",
             "علاقه",
             "غذا",
-            "آهنگ"
+            "آهنگ",
+            "موسیقی"
         ],
+
         "facts": [
             "اسم",
-            "کی",
-            "کجا",
-            "چند"
+            "اهل",
+            "شغل",
+            "دانشگاه"
         ]
     }
 
+
     for category, keywords in rules.items():
+
         if any(word in message for word in keywords):
+
             if category in memory:
                 result[category] = memory[category]
+
 
     return result

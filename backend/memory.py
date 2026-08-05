@@ -1,16 +1,19 @@
 import json
 import os
+from pathlib import Path
 
-MEMORY_FILE = "memory.json"
+MEMORY_FILE = Path(__file__).parent / "memory.json"
 
 
 def load_memory():
-    if not os.path.exists(MEMORY_FILE):
+
+    if not MEMORY_FILE.exists():
         return {
             "user": {},
             "likes": [],
             "projects": [],
-            "facts": []
+            "facts": [],
+            "notes": []
         }
 
     with open(MEMORY_FILE, "r", encoding="utf-8") as f:
