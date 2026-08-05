@@ -5,11 +5,10 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 from openai import OpenAI
 
-from memory.timeline import update_chat
-from memory.ai import should_remember
-from memory.search import get_relevant_memory
-from memory.manager import add_memory
-
+from backend.memory.timeline import update_chat
+from backend.memory.ai import should_remember
+from backend.memory.search import get_relevant_memory
+from backend.memory.manager import add_memory
 from pathlib import Path
 
 import os
