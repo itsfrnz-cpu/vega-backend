@@ -6,14 +6,21 @@ def parse_memory(response):
         data = json.loads(response)
 
         if data.get("remember"):
-            if "category" not in data or "value" not in data:
+
+            if "operations" not in data:
+                return {
+                    "remember": False
+                }
+
+            if not isinstance(data["operations"], list):
                 return {
                     "remember": False
                 }
 
         return data
 
-    except:
+    except Exception as e:
+        print("PARSE MEMORY ERROR:", repr(e))
         return {
             "remember": False
         }
