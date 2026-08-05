@@ -1,0 +1,69 @@
+{
+  "profile": {
+    "name": "",
+    "nickname": "",
+    "birthday": "",
+    "language": "fa",
+    "timezone": "",
+    "location": ""
+  },
+
+  "preferences": {
+    "likes": [],
+    "dislikes": [],
+    "favorite_music": [],
+    "favorite_movies": [],
+    "favorite_books": [],
+    "favorite_foods": [],
+    "favorite_colors": [],
+    "favorite_games": [],
+    "favorite_apps": []
+  },
+
+  "projects": [
+    {
+      "id": "",
+      "name": "",
+      "description": "",
+      "status": "",
+      "started_at": "",
+      "updated_at": "",
+      "tags": [],
+      "notes": []
+    }
+  ],
+
+  "people": [
+    {
+      "name": "",
+      "relationship": "",
+      "notes": []
+    }
+  ],
+
+  "goals": [
+    {
+      "title": "",
+      "status": "",
+      "progress": 0
+    }
+  ],
+
+  "habits": [],
+
+  "facts": [],
+
+  "skills": [],
+
+  "timeline": {
+    "first_chat": "",
+    "last_chat": "",
+    "message_count": 0
+  },
+
+  "conversation_summary": "",
+
+  "daily_memory": [],
+
+  "notes": []
+}

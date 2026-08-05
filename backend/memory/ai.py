@@ -29,8 +29,18 @@ Example:
 
 {
   "remember": true,
-  "category": "likes",
-  "value": "Taylor Swift"
+  "operations": [
+    {
+      "type": "add_preference",
+      "section": "favorite_music",
+      "value": "Taylor Swift"
+    },
+    {
+      "type": "update_profile",
+      "field": "language",
+      "value": "Persian"
+    }
+  ]
 }
 
 Possible categories:
