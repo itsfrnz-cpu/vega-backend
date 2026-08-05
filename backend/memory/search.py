@@ -8,38 +8,85 @@ def get_relevant_memory(message: str):
 
     result = {}
 
-    rules = {
-        "projects": [
-            "پروژه",
-            "بازی",
-            "اپ",
-            "برنامه",
-            "می‌سازم"
-        ],
+    # Music
+    music_words = [
+        "خواننده",
+        "آهنگ",
+        "موسیقی",
+        "موزیک",
+        "گوش میدم",
+        "دوست دارم"
+    ]
 
-        "likes": [
-            "دوست دارم",
-            "علاقه",
-            "غذا",
-            "آهنگ",
-            "موسیقی"
-        ],
+    if any(word in message for word in music_words):
 
-        "facts": [
-            "اسم",
-            "اهل",
-            "شغل",
-            "دانشگاه"
-        ]
-    }
+        favorite_music = memory.get(
+            "preferences",
+            {}
+        ).get(
+            "favorite_music",
+            []
+        )
+
+        if favorite_music:
+            result["favorite_music"] = favorite_music
 
 
-    for category, keywords in rules.items():
+    # Likes
+    like_words = [
+        "علاقه",
+        "دوست دارم",
+        "عاشق"
+    ]
 
-        if any(word in message for word in keywords):
+    if any(word in message for word in like_words):
 
-            if category in memory:
-                result[category] = memory[category]
+        likes = memory.get(
+            "preferences",
+            {}
+        ).get(
+            "likes",
+            []
+        )
+
+        if likes:
+            result["likes"] = likes
+
+
+    # Projects
+    project_words = [
+        "پروژه",
+        "می‌سازم",
+        "ساختم"
+    ]
+
+    if any(word in message for word in project_words):
+
+        projects = memory.get(
+            "projects",
+            []
+        )
+
+        if projects:
+            result["projects"] = projects
+
+
+    # Profile
+    profile_words = [
+        "اسمم",
+        "نامم",
+        "کی هستم"
+    ]
+
+    if any(word in message for word in profile_words):
+
+        profile = memory.get(
+            "profile",
+            {}
+        )
+
+        if profile:
+            result["profile"] = profile
 
 
     return result
